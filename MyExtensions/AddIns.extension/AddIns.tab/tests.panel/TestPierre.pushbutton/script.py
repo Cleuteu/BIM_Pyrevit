@@ -43,12 +43,16 @@ print(group.GroupId)
 groupname = group.Name
 groupmember = group.GetMemberIds()
 
+nstart = 0
 type_list = []
 for i in groupmember:
+	nstart = nstart + 1
 	subel = doc.GetElement(i)
 	subeltype = subel.GetType()
 	if str(subeltype.ToString()) not in type_list:
 			type_list.append(str(subeltype.ToString()))
+
+print(str(nstart) + " elements in group in the beginning")
 
 # t = Transaction(doc, 'Ungroup/Regroup group')
 # t.Start()
@@ -77,6 +81,12 @@ t.Start()
 status = ""
 try:
 	Ungroup(group)
+	nend = 0
+	for k in groupmember:
+		nend = nend + 1
+		# subel = doc.GetElement(k)
+		# print(subel.GetType())
+	print(str(nend) + " elements in group in the end")
 	Regroup(groupname,groupmember)
 	status = "Yeah!"
 except:
