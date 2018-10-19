@@ -43,7 +43,58 @@ print(group.GroupId)
 groupname = group.Name
 groupmember = group.GetMemberIds()
 
+nstart = 0
+type_list = []
 for i in groupmember:
+	nstart = nstart + 1
 	subel = doc.GetElement(i)
-	print(subel.GetType())
-	print(subel.GroupId)
+	subeltype = subel.GetType()
+	if str(subeltype.ToString()) not in type_list:
+			type_list.append(str(subeltype.ToString()))
+
+print(str(nstart) + " elements in group in the beginning")
+
+# t = Transaction(doc, 'Ungroup/Regroup group')
+# t.Start()
+
+# status = ""
+# try:
+# 	Ungroup(group)
+# 	status = "Group ungrouped"
+# except:
+# 	status = "Ungrouping fail"
+
+# if status == "Group ungrouped":
+# 	try:
+# 		Regroup(groupname,groupmember)
+# 		status = status + " and regrouped without failiure"
+# 	except:
+# 		status = status + " but regrouping failed"
+		
+# print(status + "\n")
+
+# t.Commit()
+
+t = Transaction(doc, 'Ungroup/Regroup group')
+t.Start()
+
+status = ""
+try:
+	Ungroup(group)
+	nend = 0
+	for k in groupmember:
+		nend = nend + 1
+		# subel = doc.GetElement(k)
+		# print(subel.GetType())
+	print(str(nend) + " elements in group in the end")
+	Regroup(groupname,groupmember)
+	status = "Yeah!"
+except:
+	status = "Fuck!"
+		
+print(status + "\n")
+
+t.Commit()
+
+for j in type_list:
+		print(j)
