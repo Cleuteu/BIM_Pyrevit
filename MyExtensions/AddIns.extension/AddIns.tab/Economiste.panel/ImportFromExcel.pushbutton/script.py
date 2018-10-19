@@ -8,6 +8,7 @@ from Autodesk.Revit.UI import *
 from System.Collections.Generic import List
 from pyrevit import forms
 from rpw.ui.forms import TextInput
+from rpw.ui.forms import (FlexForm, Label, ComboBox, TextBox, TextBox, Separator, Button)
 
 
 doc = __revit__.ActiveUIDocument.Document
@@ -40,9 +41,11 @@ if res == TaskDialogResult.Yes:
        return ret
                   
    #Open a form and choose the worksheet number
-    worksheetInput = TextInput('Name of the sheet to import', default = "Door sheet")
-    rowEnd = convertStr(TextInput('Numero de la derniere ligne a importer', default = "45"))
-    colEnd = convertStr(TextInput('Numero de la derniere colonne a importer', default = "45"))
+
+
+#     worksheetInput = TextInput('Name of the sheet to import', default = "Door sheet")
+#     rowEnd = convertStr(TextInput('Numero de la derniere ligne a importer', default = "45"))
+#     colEnd = convertStr(TextInput('Numero de la derniere colonne a importer', default = "45"))
 
     t = Transaction(doc, 'Read Excel spreadsheet.') 
     t.Start()
@@ -50,21 +53,32 @@ if res == TaskDialogResult.Yes:
     #Accessing the Excel applications.
     xlApp = System.Runtime.InteropServices.Marshal.GetActiveObject('Excel.Application')
     count = 1
-    worksheet = 0
-    for i in xlApp.Worksheets:
-      if i.Name == worksheetInput:
-        worksheet = i
-    # count += 1
 
-     # if worksheet == 0:
-          # TaskDialog.Show("Ce nom d'onglet Excel n\'existe pas dans votre fichier.\n Try again!", TaskDialogCommonButtons.Yes)
+    dicWs = {}
+    count = 1
+    for i in xlApp.Worksheets:
+        dicWs[i.Name] = i
+        count += 1
+
+    components = [Label('Enter the name of ID parameter:'),
+              ComboBox('combobox', dicWs),
+              Label('Enter the number of rows in Excel you want to integrate to Revit:'),
+              TextBox('textbox', Text="60"),
+              Label('Enter the number of colones in Excel you want to integrate to Revit:'),
+              TextBox('textbox2', Text="2"),
+              Separator(),
+              Button('Select')]
+    form = FlexForm('Title', components)
+    form.show()
+
+    worksheet = form.values['combobox']
+    rowEnd = convertStr(form.values['textbox'])
+    colEnd = convertStr(form.values['textbox2'])
  
     #Row, and Column parameters
     rowStart = 1
-    # rowEnd = 35
     column_id = 1
     colStart = 2
-    # colEnd = 3
 
 
     # Using a loop to read a range of values and print them to the console.
