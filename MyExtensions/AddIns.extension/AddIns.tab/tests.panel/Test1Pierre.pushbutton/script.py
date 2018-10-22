@@ -77,24 +77,57 @@ print(str(nstart) + " elements in group in the beginning")
 
 t = Transaction(doc, 'Ungroup/Regroup group')
 t.Start()
-
 status = ""
+host_list = []
 try:
-	Ungroup(group)
+	# t = Transaction(doc, 'Ungroup/Regroup group')
+	# t.Start()
+	# Ungroup(group)
 	nend = 0
 	for k in groupmember:
 		nend = nend + 1
-		# subel = doc.GetElement(k)
+		subel = doc.GetElement(k)
+		print(subel.Id)
+		# print(subel.GroupId)
 		# print(subel.GetType())
+		try:
+			# Get the subel host id
+			param = subel.get_Parameter(BuiltInParameter.HOST_ID_PARAM).AsValueString()
+			print(subel.Id)
+			print(param)
+			if param != "-1":
+				host_list.append(param)
+			# param = subel.get_Parameter(BuiltInParameter.HOST_ID_PARAM).AsElementId()
+			# if param.IntegerValue == -1:
+			# 	print(subel.Id)
+
+			# param = str(subel.LookupParameter("H"+u"\u00F4"+"te").AsString())
+			# if "non associ" in param:
+			# 	print(param)
+			# 	print(subel.Id)
+		except:
+			"no"
+	# Regroup(groupname,groupmember)
 	print(str(nend) + " elements in group in the end")
-	Regroup(groupname,groupmember)
+	# Regroup(groupname,groupmember)
 	status = "Yeah!"
+
 except:
 	status = "Fuck!"
+	# continue
 		
 print(status + "\n")
 
+print(host_list)
+
+n = 0
+for i in groupmember:
+	if str(i.IntegerValue) in host_list:
+		n = n + 1
+
+print(str(n) + " host in group")
+
 t.Commit()
 
-for j in type_list:
-		print(j)
+# for j in type_list:
+# 	print(j)
