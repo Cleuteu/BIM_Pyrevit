@@ -61,11 +61,11 @@ class ListElements:
 					# BuiltInCategory.OST_DuctFitting, BuiltInCategory.OST_CableTray,\
 					# BuiltInCategory.OST_CableTrayFitting, BuiltInCategory.OST_StructuralFraming]
 					
-		cat_list = [BuiltInCategory.OST_PipeCurves, BuiltInCategory.OST_DuctCurves,\
-					BuiltInCategory.OST_CableTray]
-					
 		# cat_list = [BuiltInCategory.OST_PipeCurves, BuiltInCategory.OST_DuctCurves,\
-					# BuiltInCategory.OST_CableTray, BuiltInCategory.OST_StructuralFraming]
+		# 			BuiltInCategory.OST_CableTray]
+					
+		cat_list = [BuiltInCategory.OST_PipeCurves, BuiltInCategory.OST_DuctCurves,\
+					BuiltInCategory.OST_CableTray, BuiltInCategory.OST_StructuralFraming]
 		
 		rvtlink_collector = FilteredElementCollector(doc, doc.ActiveView.Id)\
 				  .OfCategory(BuiltInCategory.OST_RvtLinks)\

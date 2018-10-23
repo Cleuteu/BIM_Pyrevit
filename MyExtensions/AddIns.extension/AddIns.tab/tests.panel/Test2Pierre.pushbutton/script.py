@@ -38,7 +38,7 @@ roomcalculator = SpatialElementGeometryCalculator(doc)
 cat_list = [BuiltInCategory.OST_PipeCurves, BuiltInCategory.OST_DuctCurves,\
 			BuiltInCategory.OST_CableTray]
 
-cat = BuiltInCategory.OST_CableTray 
+cat = BuiltInCategory.OST_DuctCurves
 
 element_collector = FilteredElementCollector(doc)\
 	.OfCategory(cat)\

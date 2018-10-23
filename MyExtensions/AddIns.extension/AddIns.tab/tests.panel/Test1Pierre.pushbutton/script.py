@@ -131,3 +131,10 @@ t.Commit()
 
 # for j in type_list:
 # 	print(j)
+
+for i in dir(group):
+		print(i)
+
+x = group.IsExternalFileReference()
+print(x)
+print(dir(x))
