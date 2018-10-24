@@ -229,7 +229,8 @@ def interpoint(el1, el2, doc1, doc2):
 					try:
 						solidcurveintersection = k.IntersectWithCurve(l,intersectOptions)
 						seg_nb = solidcurveintersection.SegmentCount
-						if seg_nb <> 0:
+						# if seg_nb <> 0:
+						if seg_nb != 0:
 							if x == 0:
 								point = solidcurveintersection.GetCurveSegment(0).GetEndPoint(0)
 								break
@@ -298,6 +299,7 @@ if Bubble(bname).presence is True:
 	t = Transaction(doc, 'Place bubbles')
 	t.Start()
 	for m in point_list:
+		print("Bubble placed")
 		instance = doc.Create.NewFamilyInstance(m, Bubble(bname).familysymbol, Structure.StructuralType.NonStructural)
 	t.Commit()
 	
