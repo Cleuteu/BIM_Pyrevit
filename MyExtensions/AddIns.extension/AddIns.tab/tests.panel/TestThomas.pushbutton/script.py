@@ -1,26 +1,25 @@
 # IMPORT 
-import clr
-import System
-import math
-import Autodesk
-clr.AddReference('RevitAPI')
-clr.AddReference('RevitAPIUI') 
-from Autodesk.Revit.DB import *
-from Autodesk.Revit.UI import *
-from pyrevit import DB, UI 
-from System.Collections.Generic import List
-from pyrevit import forms
-from rpw.ui.forms import TextInput
-from rpw.ui.forms import (FlexForm, Label, ComboBox, TextBox, TextBox, Separator, Button)
+
+import rpw
+from rpw import revit, db, ui, DB, UI
+from rpw.ui.forms import *
+
+levels_Cat = db.Collector(of_category='Levels', is_not_type=True)
+level_Elements = levels_Cat.get_elements()
+
+
+
+
+
 
 # VARIABLES UTILES
-doc = __revit__.ActiveUIDocument.Document
-uidoc = __revit__.ActiveUIDocument
-options = __revit__.Application.Create.NewGeometryOptions()
-SEBoptions = SpatialElementBoundaryOptions()
-roomcalculator = SpatialElementGeometryCalculator(doc)
+# doc = __revit__.ActiveUIDocument.Document
+# uidoc = __revit__.ActiveUIDocument
+# options = __revit__.Application.Create.NewGeometryOptions()
+# SEBoptions = SpatialElementBoundaryOptions()
+# roomcalculator = SpatialElementGeometryCalculator(doc)
 
-collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
+# collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
 
 
 # TEST RECUPERATION NIVEAUX
@@ -55,23 +54,23 @@ collector = Autodesk.Revit.DB.FilteredElementCollector(doc)
 # print(levelNameLink)
 
 
-def take_links(doc=doc):
-  linkInstances = collector.OfClass(Autodesk.Revit.DB.RevitLinkInstance)
-  print linkInstances
-  linkDoc = []
-  for links in linkInstances:
-    linkDoc.append(links.GetLinkDocument())
-  return linkDoc
+# def take_links(doc=doc):
+#   linkInstances = collector.OfClass(Autodesk.Revit.DB.RevitLinkInstance)
+#   print linkInstances
+#   linkDoc = []
+#   for links in linkInstances:
+#     linkDoc.append(links.GetLinkDocument())
+#   return linkDoc
 
-def collector_link(doc=doc):
-  return FilteredElementCollector(linkDoc[0])
+# def collector_link(doc=doc):
+#   return FilteredElementCollector(linkDoc[0])
 
-def take_levels_link(doc=linkDoc):
-  levelElementsLink = collector.OfClass(Level).ToElements()
-  levelElevationLink = []
-  for lev in levelElementsLink:
-    levelElevationLink.append(lev.ProjectElevation)
-  levelNameLink = []
-  for lev in levelElementsLink:
-    levelNameLink.append(lev.LookupParameter("Nom").AsString())
+# def take_levels_link(doc=linkDoc):
+#   levelElementsLink = collector.OfClass(Level).ToElements()
+#   levelElevationLink = []
+#   for lev in levelElementsLink:
+#     levelElevationLink.append(lev.ProjectElevation)
+#   levelNameLink = []
+#   for lev in levelElementsLink:
+#     levelNameLink.append(lev.LookupParameter("Nom").AsString())
   
