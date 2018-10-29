@@ -103,8 +103,8 @@ def Regroup(groupname,groupmember):
 
 
 
-# tg = TransactionGroup(doc, 'Ungroup/regroup all groups')
-# tg.Start()
+tg = TransactionGroup(doc, 'Ungroup/regroup all groups')
+tg.Start()
 
 for group in group_collector:
 	print(group.Id)
@@ -146,4 +146,4 @@ for group in group_collector:
 
 print("Done")
 
-# tg.Assimilate()
+tg.Assimilate()
