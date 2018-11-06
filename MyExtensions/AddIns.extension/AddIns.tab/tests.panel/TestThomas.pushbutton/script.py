@@ -37,6 +37,13 @@ grid_length_link = [grids.Curve.Length for grids in grid_elements_link]
 grid_origin_link = [grids.Curve.Origin for grids in grid_elements_link]
 grid_direction_link = [grids.Curve.Direction for grids in grid_elements_link]
 
+# ACQUIRE COORDINATES
+collector_maq = DB.FilteredElementCollector(revit.doc)
+linkInstances = collector_maq.OfClass(DB.RevitLinkInstance)
+linkDoc = [links.GetLinkDocument() for links in linkInstances]   
+collector_link = DB.FilteredElementCollector(linkDoc[0])
+coord = DB.Document.AcquireCoordinates(linkInstances)
+
 # CREATE LEVELS
 # with db.Transaction('create levels'):
 #   for k in range(len(level_elements_link)):
@@ -62,6 +69,7 @@ grid_direction_link = [grids.Curve.Direction for grids in grid_elements_link]
     # NewGrid.Curve.Direction = grid_direction_link[k]
 
 # OUT
+print coord
 # print grid_origin_link, grid_length_link, grid_direction_link
 
   
