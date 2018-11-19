@@ -273,8 +273,8 @@ intersectOptions = SolidCurveIntersectionOptions()
 
 # # # # # ATTENTION : AJOUTER CHECK SI VUE ACTIVE IS 3DVIEW
 
-bname = "OBSERVATIONS_Test_NTA"
-# bname = "Observation_Libelle SYA"
+# bname = "OBSERVATIONS_Test_NTA"
+bname = "Observation_Libelle SYA"
 
 if Bubble(bname).presence is True:
 	
