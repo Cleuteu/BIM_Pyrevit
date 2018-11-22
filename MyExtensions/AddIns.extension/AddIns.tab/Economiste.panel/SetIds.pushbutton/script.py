@@ -22,10 +22,11 @@ SEBoptions = SpatialElementBoundaryOptions()
 
 components = [Label('Pick a category:'),
               ComboBox('combobox', {'Doors': 0, 'Rooms': 1}),
-              Label('Enter the name of ID parameter:'),
+              Label('Enter the name of ID parameter'),
+              Label('(must be created like a integer - nombre entier - ) :'),
               TextBox('textbox', Text="ID Revit"),
               Separator(),
-              Button('Select')]
+              Button('OK')]
 form = FlexForm('Title', components)
 form.show()
 # User selects `Opt 1`, types 'Wood' in TextBox, and select Checkbox

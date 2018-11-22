@@ -62,7 +62,7 @@ if res == TaskDialogResult.Yes:
               Label('Enter the number of colones in Excel you want to integrate to Revit:'),
               TextBox('textbox2', Text="2"),
               Separator(),
-              Button('Select')]
+              Button('OK')]
     form = FlexForm('Title', components)
     form.show()
 
