@@ -29,7 +29,6 @@ components = [Label('Pick a category:'),
 form = FlexForm('Title', components)
 form.show()
 # User selects `Opt 1`, types 'Wood' in TextBox, and select Checkbox
-print form.values
 
 parameterName = form.values['textbox']
 category = form.values['combobox']
@@ -39,13 +38,11 @@ if category == 0:
 		 		.OfCategory(BuiltInCategory.OST_Doors)\
 		  		.WhereElementIsNotElementType()\
 		  		.ToElements()
-	print 'ici'
 else:
 	collector = FilteredElementCollector(doc)\
 		 		.OfCategory(BuiltInCategory.OST_Rooms)\
 		  		.WhereElementIsNotElementType()\
 		  		.ToElements()
-	print 'la!'
 
 t = Transaction(doc, 'Fill Ids')
 t.Start()

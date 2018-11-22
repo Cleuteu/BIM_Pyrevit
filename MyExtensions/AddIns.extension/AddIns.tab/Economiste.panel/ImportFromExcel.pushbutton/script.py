@@ -40,13 +40,6 @@ if res == TaskDialogResult.Yes:
            ret = 0
        return ret
                   
-   #Open a form and choose the worksheet number
-
-
-#     worksheetInput = TextInput('Name of the sheet to import', default = "Door sheet")
-#     rowEnd = convertStr(TextInput('Numero de la derniere ligne a importer', default = "45"))
-#     colEnd = convertStr(TextInput('Numero de la derniere colonne a importer', default = "45"))
-
     t = Transaction(doc, 'Read Excel spreadsheet.') 
     t.Start()
    
@@ -60,7 +53,9 @@ if res == TaskDialogResult.Yes:
         dicWs[i.Name] = i
         count += 1
 
-    components = [Label('Enter the name of ID parameter:'),
+    components = [Label('Pick a category:'),
+              ComboBox('combobox2', {'Doors': 0, 'Rooms': 1}),
+              Label('Enter the name of ID parameter:'),
               ComboBox('combobox', dicWs),
               Label('Enter the number of rows in Excel you want to integrate to Revit:'),
               TextBox('textbox', Text="60"),
@@ -74,13 +69,23 @@ if res == TaskDialogResult.Yes:
     worksheet = form.values['combobox']
     rowEnd = convertStr(form.values['textbox'])
     colEnd = convertStr(form.values['textbox2'])
- 
+    category = form.values['combobox2']
+
+    if category == 0:
+      collector = FilteredElementCollector(doc)\
+            .OfCategory(BuiltInCategory.OST_Doors)\
+              .WhereElementIsNotElementType()\
+              .ToElements()
+    else:
+      collector = FilteredElementCollector(doc)\
+            .OfCategory(BuiltInCategory.OST_Rooms)\
+              .WhereElementIsNotElementType()\
+              .ToElements()
+
     #Row, and Column parameters
     rowStart = 1
     column_id = 1
     colStart = 2
-
-    # blabla
 
 
     # Using a loop to read a range of values and print them to the console.
@@ -104,29 +109,25 @@ if res == TaskDialogResult.Yes:
                               
     t.Commit()
                
-    #Recuperation des portes
-    doors = FilteredElementCollector(doc)\
-          .OfCategory(BuiltInCategory.OST_Doors)\
-          .WhereElementIsNotElementType()\
-          .ToElements()
-   
+ 
     #Get parameters in the model
-    params_door_set = doors[0].Parameters
-    params_door_name = []
-    for param_door in params_door_set:
-     params_door_name.append(param_door.Definition.Name)
+    params_element_set = collector[0].Parameters
+    params_element_name = []
+    for param_element in params_element_set:
+     params_element_name.append(param_element.Definition.Name)
                   
-    unfounddoors = []
+    unfoundelements = []
    
-    t = Transaction(doc, 'Feed doors')
+    t = Transaction(doc, 'Feed elements')
     t.Start()
 
-    for hash in array:
-        idInt = int(hash['id'])
+
+    for elementhash in array:
+        idInt = int(elementhash['id'])
         try :
-            door_id = ElementId(idInt)
-            door = doc.GetElement(door_id)
-            groupId = door.GroupId
+            element_id = ElementId(idInt)
+            element = doc.GetElement(element_id)
+            groupId = element.GroupId
             if str(groupId) != "-1":
                 group = doc.GetElement(groupId)
                 groupname = group.Name
@@ -134,26 +135,26 @@ if res == TaskDialogResult.Yes:
                 Ungroup(group)
                            
             for param in param_names_excel:
-                if (param in params_door_name) and (param in hash):
-                    door.LookupParameter(param).Set(hash[param])
+                if (param in params_element_name) and (param in elementhash):
+                    element.LookupParameter(param).Set(elementhash[param])
                                           
             if str(groupId) != "-1":
                 Regroup(groupname,groupmember)
                     # if "(membre exclu)" in group.GroupType.Name:
                     # group.GroupType.Name = groupname
-            print("Door " + str(idInt) + " : OK")
+            print("element " + str(idInt) + " : OK" )
 
         except:
             print(str(idInt) + " not in REVIT doc")
-            unfounddoors.append(idInt)
+            unfoundelements.append(idInt)
                                 
     print("Job done!")
    
     t.Commit()
 
-    if len(unfounddoors) != 0:
-        print(str(len(unfounddoors)) + " doors not found : ")
-        print(unfounddoors)
+    if len(unfoundelements) != 0:
+        print(str(len(unfoundelements)) + " elements not found : ")
+        print(unfoundelements)
 
 else:
     "A plus tard!"
