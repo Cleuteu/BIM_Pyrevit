@@ -121,9 +121,10 @@ if res == TaskDialogResult.Yes:
     t = Transaction(doc, 'Feed elements')
     t.Start()
 
-
+    i = 0
     for elementhash in array:
         idInt = int(elementhash['id'])
+        i += 1
         try :
             element_id = ElementId(idInt)
             element = doc.GetElement(element_id)
@@ -142,7 +143,7 @@ if res == TaskDialogResult.Yes:
                 Regroup(groupname,groupmember)
                     # if "(membre exclu)" in group.GroupType.Name:
                     # group.GroupType.Name = groupname
-            print("element " + str(idInt) + " : OK" )
+            print("element " + str(idInt) + " : OK - Avancement :" + str(i) + "/" + str(rowEnd))
 
         except:
             print(str(idInt) + " not in REVIT doc")
