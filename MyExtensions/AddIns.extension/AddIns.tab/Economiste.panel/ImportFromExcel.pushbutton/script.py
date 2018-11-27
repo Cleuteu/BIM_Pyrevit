@@ -55,7 +55,7 @@ if res == TaskDialogResult.Yes:
 
     components = [Label('Pick a category:'),
               ComboBox('combobox2', {'Doors': 0, 'Rooms': 1}),
-              Label('Enter the name of ID parameter:'),
+              Label('Select the name of Excel sheet to import:'),
               ComboBox('combobox', dicWs),
               Label('Enter the number of rows in Excel you want to integrate to Revit:'),
               TextBox('textbox', Text="60"),
