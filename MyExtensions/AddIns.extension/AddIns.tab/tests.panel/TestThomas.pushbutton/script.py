@@ -15,15 +15,36 @@ with db.Transaction('insert link'):
   linkloadresult = DB.RevitLinkType.Create(revit.doc, linkpath, linkoptions)
   DB.RevitLinkInstance.Create(revit.doc, linkloadresult.ElementId)
 
+# ACQUIRE COORDINATES
+# collector_maq = DB.FilteredElementCollector(revit.doc)
+# linkInstances = collector_maq.OfClass(DB.RevitLinkInstance).AsElementId()
+
+# DB.Document.AcquireCoordinates(linkInstances)
+
+# GET SITE LOCATION LINK
+collector_maq = DB.FilteredElementCollector(revit.doc)
+linkInstances = collector_maq.OfClass(DB.RevitLinkInstance)
+linkDoc = [links.GetLinkDocument() for links in linkInstances]
+collector_link = DB.FilteredElementCollector(linkDoc[0])
+
+siteloc_elements_link = collector_link.OfClass(DB.ProjectLocation).ToElements()
+projectloc_name_link = [proj.Name for proj in siteloc_elements_link]
+for proj in siteloc_elements_link:
+  if proj.Name != "Projet" and proj.Name != "Interne":
+    siteloc_longitude_link = proj.SiteLocation.Longitude
+    siteloc_latitude_link = proj.SiteLocation.Latitude
+    siteloc_elevation_link = proj.SiteLocation.Elevation
+    siteloc_placename_link = proj.SiteLocation.PlaceName
 
 
-# MAQUETTE
+# COLLECT LEVELS MAQUETTE
 level_category = db.Collector(of_category='Levels', is_not_type=True)
 level_elements = level_category.get_elements()
 level_name = [levels.LookupParameter("Nom").AsString() for levels in level_elements]
 level_elevation = [levels.Elevation for levels in level_elements]
 level_id = [levels.Id for levels in level_elements]
 
+# COLLECT GRIDS MAQUETTE
 grid_category = db.Collector(of_category='OST_Grids', is_not_type=True)
 grid_elements = grid_category.get_elements()
 
@@ -49,12 +70,6 @@ grid_length_link = [grids.Curve.Length for grids in grid_elements_link]
 grid_origin_link = [grids.Curve.Origin for grids in grid_elements_link]
 grid_direction_link = [grids.Curve.Direction for grids in grid_elements_link]
 
-# ACQUIRE COORDINATES
-collector_maq = DB.FilteredElementCollector(revit.doc)
-linkInstances = collector_maq.OfClass(DB.RevitLinkInstance)
-linkDoc = [links.GetLinkDocument() for links in linkInstances]   
-collector_link = DB.FilteredElementCollector(linkDoc[0])
-coord = DB.Document.AcquireCoordinates(linkInstances)
 
 # # CREATE LEVELS
 # with db.Transaction('create levels'):
@@ -85,6 +100,7 @@ coord = DB.Document.AcquireCoordinates(linkInstances)
 
 # OUT
 
-print grid_origin_link, grid_length_link, grid_direction_link
+print siteloc_elements_link, siteloc_elevation_link, siteloc_latitude_link, siteloc_longitude_link, siteloc_placename_link
+
 
   
