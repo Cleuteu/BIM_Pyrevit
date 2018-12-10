@@ -22,7 +22,10 @@ room_element = room_category.get_elements()
 room_name = [room.LookupParameter('Nom').AsString() for room in room_element]
 liste_cat.append(room_name)
 # zone
-
+zone_category = db.Collector(of_category='FilledRegion')
+zone_element = zone_category.get_elements()
+zone_type = [zone.LookupParameter('Type').AsValueString() for zone in zone_element]
+liste_cat.append(zone_type)
 # Mur
 wall_category = db.Collector(of_category='Walls', is_not_type=True)
 wall_element = wall_category.get_elements()
@@ -34,10 +37,10 @@ column_element = column_category.get_elements()
 column_type = [column.LookupParameter('Type').AsValueString() for column in column_element]
 liste_cat.append(column_type)
 # poutre
-# beam_category = db.Collector(of_category='Beams', is_not_type=True)
-# beam_element = beam_category.get_elements()
-# beam_type = [beam.LookupParameter('Type').AsValueString() for beam in beam_element]
-# liste_cat.append(beam_type)
+beam_category = db.Collector(of_category='Beams', is_not_type=True)
+beam_element = beam_category.get_elements()
+beam_type = [beam.LookupParameter('Type').AsValueString() for beam in beam_element]
+liste_cat.append(beam_type)
 # sol
 floor_category = db.Collector(of_category='Floors', is_not_type=True)
 floor_element = floor_category.get_elements()
@@ -82,7 +85,6 @@ liste_cat.append(door_type)
 
 
 
-
 # EXCEL
 clr.AddReferenceByName('Microsoft.office.Interop.Excel, Version=11.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c')
 from Microsoft.Office.Interop import Excel
@@ -91,8 +93,8 @@ ex.Visible = True
 ex.DisplayAlerts = False
 xlApp = Marshal.GetActiveObject("Excel.Application")
 
-fileData = ['C:\Users\ThomasFaguet\Documents\PROJETS\PUISARD Lyon\Cahier_des_charges_Codification.xlsx']
-fileVisa = ['C:\Users\ThomasFaguet\Documents\PROJETS\PUISARD Lyon\DonneesBrutesCodification.xlsx']
+fileData = ['C:\\Users\\ThomasFaguet\\Documents\\PROJETS\\PUISARD Lyon\\Cahier_des_charges_Codification.xlsx']
+fileVisa = ['C:\\Users\\ThomasFaguet\\Documents\\PROJETS\\PUISARD Lyon\\DonneesBrutesCodification.xlsx']
 
 wb_data = ex.Workbooks.Open(fileData[0])
 ws_data = wb_data.Worksheets[1]
@@ -118,29 +120,32 @@ wb_visa = ex.Workbooks.Open(fileVisa[0])
 ws_visa = wb_visa.Worksheets[2]
 
 #operations
-for j in range(1,10):
+for j in range(len(liste_cat)):
   res1 = len(liste_cat[j])
   n = float(0)
-  for typ in liste_cat[j]:
-    for data in obj[j]:
-      if data == typ:
-        n = n + 1
-        pourcent = n/res1
-        cell = ws_visa.Range[xlrange[1,j]]
-        cell.Value2 = res1
-        cell2 = ws_visa.Range[xlrange[2,j]]
-        cell2.Value2 = n
-        cell3 = ws_visa.Range[xlrange[3,j]]
-        cell3.Value2 = pourcent
+  if res1 != 0 :
+    for typ in liste_cat[j]:
+      for data in obj[j]:
+        if data == typ:
+          n = n + 1
+          pourcent = n/res1
+          cell = ws_visa.Range[xlrange[1,j+1]]
+          cell.Value2 = res1
+          cell2 = ws_visa.Range[xlrange[2,j+1]]
+          cell2.Value2 = n
+          cell3 = ws_visa.Range[xlrange[3,j+1]]
+          cell3.Value2 = pourcent
+  else :
+    pourcent = n/1
+    cell = ws_visa.Range[xlrange[1,j+1]]
+    cell.Value2 = res1
+    cell2 = ws_visa.Range[xlrange[2,j+1]]
+    cell2.Value2 = n
+    cell3 = ws_visa.Range[xlrange[3,j+1]]
+    cell3.Value2 = pourcent
 
 
-# cell = ws_visa.Range["A1"]
-# cell.Value2 = res1
-# cell2 = ws_visa.Range["B1"]
-# cell2.Value2 = n
-# cell3 = ws_visa.Range["C1"]
-# cell3.Value2 = pourcent
-
+print liste_cat, obj, len(liste_cat), zone_category, zone_element, zone_type
 #fermeture excel
 Marshal.ReleaseComObject(ws_data)
 Marshal.ReleaseComObject(ws_visa)
@@ -149,7 +154,7 @@ Marshal.ReleaseComObject(wb_visa)
 Marshal.ReleaseComObject(xlApp)
 
 
-
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 # # # USERFORM BIM CHECKER
 # # components = [Label('Check a choisir'),
