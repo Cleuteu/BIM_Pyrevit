@@ -37,11 +37,11 @@ column_element = column_category.get_elements()
 column_type = [column.LookupParameter('Type').AsValueString() for column in column_element]
 liste_cat.append(column_type)
 # poutre
-beam_category = db.Collector(of_category='Beams', is_not_type=True)
-beam_element = beam_category.get_elements()
-beam_type = [beam.LookupParameter('Type').AsValueString() for beam in beam_element]
-liste_cat.append(beam_type)
-# sol
+# beam_category = db.Collector(of_category='FamilyInstance', is_not_type=True)
+# beam_element = beam_category.get_elements()
+# beam_type = [beam.LookupParameter('Type').AsValueString() for beam in beam_element]
+# liste_cat.append(beam_type)
+# plancher
 floor_category = db.Collector(of_category='Floors', is_not_type=True)
 floor_element = floor_category.get_elements()
 floor_type = [floor.LookupParameter('Type').AsValueString() for floor in floor_element]
@@ -57,14 +57,20 @@ window_element = window_category.get_elements()
 window_type = [window.LookupParameter('Type').AsValueString() for window in window_element]
 liste_cat.append(window_type)
 # mur-rideau
-
+curtain_wall_category = db.Collector(of_category='Walls', is_not_type=True)
+curtain_wall_element = curtain_wall_category.get_elements()
+curtain_wall_type = [wall.LookupParameter('Type').AsValueString() for wall in curtain_wall_element]
+liste_cat.append(curtain_wall_type)
 # escalier
 stair_category = db.Collector(of_category='stairs', is_not_type=True)
 stair_element = stair_category.get_elements()
 stair_type = [stair.LookupParameter('Type').AsValueString() for stair in stair_element]
 liste_cat.append(stair_type)
 # cloison
-
+partition_wall_category = db.Collector(of_category='Walls', is_not_type=True)
+partition_wall_element = partition_wall_category.get_elements()
+partition_wall_type = [wall.LookupParameter('Type').AsValueString() for wall in partition_wall_element]
+liste_cat.append(partition_wall_type)
 # plafond
 ceiling_category = db.Collector(of_category='ceilings', is_not_type=True)
 ceiling_element = ceiling_category.get_elements()
@@ -78,6 +84,10 @@ liste_cat.append(door_type)
 # brise soleil
 # store
 # garde-coprs
+railing_category = db.Collector(of_category='OST_RailingHandRail', is_not_type=True)
+railing_element = railing_category.get_elements()
+railing_type = [railing.LookupParameter('Type').AsValueString() for door in railing_element]
+liste_cat.append(railing_type)
 # appareil elevateur
 # parking
 # topographie
