@@ -7,8 +7,7 @@ from Autodesk.Revit.DB import *
 from Autodesk.Revit.UI import *
 from System.Collections.Generic import List
 from pyrevit import forms
-from rpw.ui.forms import TextInput
-from rpw.ui.forms import (FlexForm, Label, ComboBox, TextBox, TextBox, Separator, Button)
+from rpw.ui.forms import (Alert, TextInput, FlexForm, Label, ComboBox, TextBox, TextBox, Separator, Button)
 
 
 doc = __revit__.ActiveUIDocument.Document
@@ -87,6 +86,11 @@ if res == TaskDialogResult.Yes:
     column_id = 1
     colStart = 2
 
+    #Get parameters in the model
+    params_element_set = collector[0].Parameters
+    params_element_name = []
+    for param_element in params_element_set:
+     params_element_name.append(param_element.Definition.Name)
 
     # Using a loop to read a range of values and print them to the console.
     array = []
@@ -105,57 +109,67 @@ if res == TaskDialogResult.Yes:
                     if data_param_value != '':
                         data[data_param_name] = data_param_value
             array.append(data)
-               
-                              
-    t.Commit()
-               
- 
-    #Get parameters in the model
-    params_element_set = collector[0].Parameters
-    params_element_name = []
-    for param_element in params_element_set:
-     params_element_name.append(param_element.Definition.Name)
-                  
-    unfoundelements = []
-   
-    t = Transaction(doc, 'Feed elements')
-    t.Start()
-
-    i = 0
-    for elementhash in array:
-        idInt = int(elementhash['id'])
-        i += 1
-        try :
-            element_id = ElementId(idInt)
-            element = doc.GetElement(element_id)
-            groupId = element.GroupId
-            if str(groupId) != "-1":
-                group = doc.GetElement(groupId)
-                groupname = group.Name
-                groupmember = group.GetMemberIds()
-                Ungroup(group)
-                           
-            for param in param_names_excel:
-                if (param in params_element_name) and (param in elementhash):
-                    element.LookupParameter(param).Set(elementhash[param])
-                                          
-            if str(groupId) != "-1":
-                Regroup(groupname,groupmember)
-                    # if "(membre exclu)" in group.GroupType.Name:
-                    # group.GroupType.Name = groupname
-            print("element " + str(idInt) + " : OK - Avancement :" + str(i) + "/" + str(rowEnd))
-
-        except:
-            print(str(idInt) + " not in REVIT doc")
-            unfoundelements.append(idInt)
-                                
-    print("Job done!")
-   
+                                         
     t.Commit()
 
-    if len(unfoundelements) != 0:
-        print(str(len(unfoundelements)) + " elements not found : ")
-        print(unfoundelements)
+    #Check if parameters from Excel are in the model
+    missing_param = []
+    for param in param_names_excel:
+      if (param not in params_element_name) and param not in (missing_param):
+        missing_param.append(param)
+    
+    #Ask to continue if some parameters are missing
+    nbr_missing_param = len(missing_param)          
+    if nbr_missing_param != 0:
+      miss_button = TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No
+      miss = TaskDialog.Show("Parameters missing", "Some parameters in Excel document are missing in Revit : " + ", ".join(missing_param) + ".\nThe plugin cannot write in this parameters.\nDo you want to continue?" , miss_button)
+      if miss == TaskDialogResult.Yes:
 
+        unfoundelements = []
+       
+        t = Transaction(doc, 'Feed elements')
+        t.Start()
+
+        i = 0
+        for elementhash in array:
+            idInt = int(elementhash['id'])
+            i += 1
+            try :
+                element_id = ElementId(idInt)
+                element = doc.GetElement(element_id)
+                groupId = element.GroupId
+                if str(groupId) != "-1":
+                    group = doc.GetElement(groupId)
+                    groupname = group.Name
+                    groupmember = group.GetMemberIds()
+                    Ungroup(group)
+                               
+                for param in param_names_excel:
+                    if (param in params_element_name) and (param in elementhash):
+                        element.LookupParameter(param).Set(elementhash[param])
+                                              
+                if str(groupId) != "-1":
+                    Regroup(groupname,groupmember)
+                        # if "(membre exclu)" in group.GroupType.Name:
+                        # group.GroupType.Name = groupname
+                print("element " + str(idInt) + " : OK - Avancement :" + str(i) + "/" + str(rowEnd))
+
+            except:
+                print(str(idInt) + " not in REVIT doc")
+                unfoundelements.append(idInt)
+                                    
+        print("Job done!")
+       
+        t.Commit()
+
+        if len(unfoundelements) != 0:
+            print(str(len(unfoundelements)) + " elements not found : ")
+            print(unfoundelements)
+
+        if nbr_missing_param != 0:
+          print(str(len(missing_param)) + " parameters from Excel not found in Revit (wrong spelling in Excel or just not in this Revit document?) : ")
+          print(missing_param)
+      else:
+        Alert('Come back when your changes are done', title = "End of the program", exit = True)
 else:
-    "A plus tard!"
+  Alert('A plus tard!', title = "End of the program", exit = True)
