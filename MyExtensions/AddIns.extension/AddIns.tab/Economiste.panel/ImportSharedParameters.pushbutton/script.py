@@ -78,18 +78,16 @@ def checkbox(itemsDef, itemsName):
   return itemsChoosed
 
 #Save the choices of the user
-gpStringChoosed = SelectFromList('Parameter Group', gpNames)
-gpChoosed = gp[gpStringChoosed]
-
 categoriesChoosed = checkbox(categoriesDef, categoriesName)
 spParametersChoosed = checkbox(spParametersDef, spParametersName)
-print(categoriesChoosed)
+gpStringChoosed = SelectFromList('Parameter Group', gpNames)
+
 #creating category set
 catset = app.Create.NewCategorySet()
 [catset.Insert(j) for j in categoriesChoosed]
 
 #Import the parameter in the parameter group choosed by user
-group = gpChoosed
+group = gp[gpStringChoosed]
 
 #Instances parameters
 bind = app.Create.NewInstanceBinding(catset)
