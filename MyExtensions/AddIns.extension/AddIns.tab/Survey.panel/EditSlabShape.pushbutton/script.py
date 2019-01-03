@@ -27,7 +27,7 @@ uidoc = __revit__.ActiveUIDocument
 
 commands = [CommandLink('OK', return_value = True), CommandLink('No, let me change my Excel please', return_value = False)]
 
-dialog = TaskDialog("Warning Form", content = 'The coordinates in Excel sheet must be in centimeters, with for first colomn x, second y and third z', commands = commands)
+dialog = TaskDialog("Warning Form", content = 'The Excel sheet to import must be open with for first colomn x, second y and third z', commands = commands)
 
 
 if dialog.show():
@@ -43,7 +43,10 @@ if dialog.show():
   t.Start()
 
   #Accessing the Excel applications.
-  xlApp = System.Runtime.InteropServices.Marshal.GetActiveObject('Excel.Application')
+  try:
+    xlApp = System.Runtime.InteropServices.Marshal.GetActiveObject('Excel.Application')
+  except:
+    Alert('The Excel sheet must be open (the program failed because of a problem with Excel)', title = "Failed", exit = True)
 
   dicWs = {}
   count = 1
@@ -51,8 +54,10 @@ if dialog.show():
       dicWs[i.Name] = i
       count += 1
 
-  components = [Label('Select the name of Excel sheet to import:'),
+  components = [Label('Select the name of Excel sheet to import :'),
             ComboBox('combobox', dicWs),
+            Label('Choose the units you used in your Excel sheet :'),
+            ComboBox('combobox2', {'Meters': 3.048, 'Decimeters': 30.48, 'Centimeters': 304.8, 'Millimeters': 3048}),
             Label('Enter the number of points:'),
             TextBox('textbox', Text="11"),
             Separator(),
@@ -66,9 +71,9 @@ if dialog.show():
   fails = []
   for r in range(1, rowEnd):
     try:
-      x = convertStr(worksheet.Cells(r, 1).Text)/30.48
-      y = convertStr(worksheet.Cells(r, 2).Text)/30.48
-      z = convertStr(worksheet.Cells(r, 3).Text)/30.48
+      x = convertStr(worksheet.Cells(r, 1).Text)/form.values['combobox2']
+      y = convertStr(worksheet.Cells(r, 2).Text)/form.values['combobox2']
+      z = convertStr(worksheet.Cells(r, 3).Text)/form.values['combobox2']
       array.append(XYZ(x,y,z))
     except:
       fails.append(str(r))
