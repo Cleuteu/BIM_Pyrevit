@@ -281,12 +281,10 @@ from Autodesk.Revit.DB import *
 from Autodesk.Revit.UI import *
 from System.Collections.Generic import List
 from pyrevit import forms
+from rpw.ui.forms import TextInput
 
 doc = __revit__.ActiveUIDocument.Document
 uidoc = __revit__.ActiveUIDocument
-options = __revit__.Application.Create.NewGeometryOptions()
-SEBoptions = SpatialElementBoundaryOptions()
-roomcalculator = SpatialElementGeometryCalculator(doc)
 
 class CheckBoxOption:
 	def __init__(self, name, default_state=False):
@@ -305,14 +303,11 @@ res1 = forms.SelectFromList.show(view_list,
 									name_attr = "Vue",
 									button_name = "OK")
 
-# if not len(res1) == 0:
 if res1 != None:
 	if res1[0] == "La vue active":
 		collector = FilteredElementCollector(doc, doc.ActiveView.Id)
 	else:
 		collector = FilteredElementCollector(doc)
-
-
 
 	categories = doc.Settings.Categories
 	cat_dir = {}
@@ -332,10 +327,6 @@ if res1 != None:
 	# print(cat_dir.values()[0])
 	# print(bic_dir.values()[0])
 
-
-
-
-
 	cat_list = cat_dir.keys()
 	options = [CheckBoxOption(j) for j in cat_list]
 
@@ -346,7 +337,6 @@ if res1 != None:
 		if checkbox.state == True:
 			res2.append(checkbox.name)
 
-	# chosenCat_list = [cats[int(cat_dir[x])] for x in res2]
 	chosenCat_list = [cat_dir[x] for x in res2]
 
 	icatcollection = List[ElementId]()
@@ -358,38 +348,26 @@ if res1 != None:
 	paramFilter = ParameterFilterUtilities.GetFilterableParametersInCommon(doc,icatcollection)
 
 	bip_dir = {}
+	bipName_dir = {}
 	for bip in BuiltInParameter.GetValues(BuiltInParameter):
 		bipId = str(ElementId(bip).IntegerValue)
 		bip_dir[bipId] = bip
+		try:
+			bipName = LabelUtils.GetLabelFor(bip)
+		except:
+			bipName = bip.ToString()
+		bipName_dir[bipId] = bipName
 
-	# for bic in BuiltInCategory.GetValues(BuiltInCategory):
-	# 	bicId = str(ElementId(bic).IntegerValue)
-	# 	print(bic.GetName())
-	# 	print(dir(bic))
-	# 	break
-
-	# param_list = []
-	# paramName_list = []
 	param_dir = {}
 	for paramId in paramFilter:
 		if paramId.IntegerValue < 0:
-			paramName = bip_dir[str(paramId.IntegerValue)].ToString()
-			# paramName_list.append(paramName)
+			paramName = bipName_dir[str(paramId.IntegerValue)]
 			param = bip_dir[str(paramId.IntegerValue)]
-			# param_list.append(param)
 			param_dir[paramName] = param
 		else:
 			paramName = doc.GetElement(paramId).Name
 			param = doc.GetElement(paramId)
-			# paramName_list.append(paramName)
-			# param_list.append(param)
 			param_dir[paramName] = param
-
-	# print(dir(BuiltInParameter))
-	# for bip in BuiltInParameter.GetValues(BuiltInParameter):
-	# 	print(bip)
-	# 	print(ElementId(bip))
-
 
 
 	res3 = forms.SelectFromList.show(param_dir.keys(),
@@ -398,6 +376,7 @@ if res1 != None:
 										button_name = "OK")
 
 	if res3 != None:
+		value = TextInput('Value', default="Parameter value")
 		chosenParam = param_dir[res3[0]]
 		categoryFilter = LogicalOrFilter(elementFilter)
 		# element_collector = FilteredElementCollector(searchRange)\
@@ -411,41 +390,34 @@ if res1 != None:
 
 		icollection = List[ElementId]()
 		for e in element_collector:
-			p = e.LookupParameter(res3[0])
-			print(p)
-			print(p.StorageType)
+			print(e)
+			try:
+				p = e.get_Parameter(chosenParam.GuidValue)
+				print(p)
+				print(p.StorageType)
+				if (str(p.StorageType) == "Integer") and (str(p.AsString()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "String") and (str(p.AsValueString()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "Double") and (str(p.AsDouble()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "ElementId") and (str(p.AsValueString()) == str(value)):
+					icollection.Add(e.Id)
+			except:
+				p = e.get_Parameter(chosenParam)
+				print(p)
+				print(p.StorageType)
+				if (str(p.StorageType) == "Integer") and (str(p.AsString()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "String") and (str(p.AsValueString()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "Double") and (str(p.AsDouble()) == str(value)):
+					icollection.Add(e.Id)
+				elif (str(p.StorageType) == "ElementId") and (str(p.AsValueString()) == str(value)):
+					icollection.Add(e.Id)
 
-			# try:
-			# 	p = e.get_Parameter(chosenParam)
-			# except:
-			# 	p = e.GetParameters(res3[0])[0]
-			# print(p)
-			# print(p.StorageType)
-			# print(p.AsString())
-
-
-
-			break
+		uidoc.Selection.SetElementIds(icollection)
 	else:
 		"bye"
-
-
-
-
-	# for cat in chosenCat_list:
-	# 	print("Category name : " + cat.Name)
-	# 	element_collector = FilteredElementCollector(doc)\
-	# 		.OfCategoryId(cat.Id)\
-	# 		.WhereElementIsNotElementType()\
-	# 		.ToElements()
-	# 	try:
-	# 		fe = element_collector[0]
-	# 		print(fe)
-	# 		catParam_list = fe.GetOrderedParameters()
-	# 		for param in catParam_list:
-	# 			print(param.Definition.Name)
-	# 	except:
-	# 		print("No such category as " + '"' + cat.Name + '"' + " in this document")
-
 else:
 	"bye"
