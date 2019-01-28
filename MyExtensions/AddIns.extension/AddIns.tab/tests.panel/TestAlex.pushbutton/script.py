@@ -49,12 +49,7 @@ form.show()
 
 floor_level = round(form.values["floor_level"].Elevation/3.2808399,3)
 height_required = float(form.values["height_required"])
-# Alert('Pick a slab please (clicking on it)', title = "Select a slab", exit = False)
-# # Pick an element
-# sel = uidoc.Selection
-# obType = Selection.ObjectType.Element
-# ref = sel.PickObject(obType, "Select floor.")
-# floor = doc.GetElement(ref.ElementId)
+
 
 t = Transaction(doc, 'Tag beam')
 t.Start()
@@ -67,7 +62,12 @@ for beam in beam_collector:
   beam.LookupParameter("HSP").Set(z_min - floor_level)
     # beam.LookupParameter("HSP").Set(height_required + 0.01)
 
+# TODO : Create a filter for each value of delta (wth 1cm beetween them)
+# TODO : Create a sheet for each level and a view for each level; send view on the sheets
+# TODO : Find beams for a specific level
+# TODO : Create the schedule for all levels?
 
+# TODO : Wright the method for everybody?
 
 t.Commit()
 

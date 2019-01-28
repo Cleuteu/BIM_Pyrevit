@@ -1,9 +1,9 @@
 
 """Import a list of points in order to edit the shape of a slab"""
 
-__title__ = 'TestAlex1'
+__title__ = 'Hauteur sous poutres'
 
-__doc__ = 'Needed : an Excel list of points\' coordinates (in centimeters), with for first colomn x, second y and third z'
+__doc__ = 'Calcul et application d\'un filtre de hauteur sous poutres pour une maquette geometre d\'un batiment cure'
 
 # -*- coding: utf-8 -*-
 e_a = str("\xe9")
@@ -64,7 +64,10 @@ for beam in beam_collector:
   z_min = ((beam.get_Geometry(options).GetBoundingBox().Min).Z/3.2808399)
   heightBeam = round(z_max - z_min, 2)
   delta = z_min - floor_level - height_required
-  beam.LookupParameter("HSP").Set(z_min - floor_level)
+  try:	
+  	beam.LookupParameter("HSP").Set(z_min - floor_level)
+  except:
+  	print("Not succeed for " + beam.Id)
     # beam.LookupParameter("HSP").Set(height_required + 0.01)
 
 
